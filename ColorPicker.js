@@ -1,8 +1,28 @@
 ﻿(function () {
-    var rgbaWhite = [255, 255, 255, 1.0]
-      , $window = $(this)
-      , $document = $(document)
-      , counter = this.colorPickerCounter || 0;
+    var rgbaWhite = [255, 255, 255, 1.0],
+        $window = $(this),
+        $document = $(document),
+        counter = this.colorPickerCounter || 0,
+        template = '<div class="color-picker-overlay hide"></div>' + 
+                    '<div class="color-picker hide">' +
+                        '<div class="color-sample-wrap box-wrap">' +
+                            '<div class="color-sample box"></div>' +
+                        '</div>' +
+                        '<a href="#" class="close">&times;</a>' +
+                        '<div class="color-box-wrap box-wrap">' +
+                            '<div class="color-box box">' +
+                                '<div class="color-box-overlay"></div>' +
+                                '<div class="color-box-handle"><div class="color-box-handle-inner"></div></div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="box-wrap hue-slider-wrap">' +
+                            '<div class="box hue-slider"><div class="hue-slider-handle"></div></div>' +
+                        '</div>' +
+                        '<div class="btn-wrap">' +
+                            '<a href="#" class="btn btn-inverse btn-cancel">Cancel</a>' +
+                            '<a href="#" class="btn btn-primary btn-save">Save</a>' +
+                        '</div>' +
+                   '</div>';
 
     this.ColorPicker = function (config) {
         var that = this;
@@ -13,55 +33,65 @@
         this.$save = null;
         this.$close = null;
 
-        this.target.$el = config.target || null;
-
         this.property = config.property || "background-color";
         this.lastColor = new Color(config.rgba);
         this.color = new Color(config.rgba);
 
-        if (config.trigger) {
-            this.target.$el.on(config.trigger, function () { that.show.call(that) });
-        }
-
         counter++;
 
-        this.init();
+        this.init(config);
     };
 
     ColorPicker.prototype = {
-        init: function () {
+        init: function (config) {
+            this.colorBox.parent = this.hueSlider.parent = this;
+
+            this.target = {
+                parent: this,
+                $el: config.target || null,
+                init: function () {
+                    this.$el.addClass("color-picker-target");
+                },
+                destroy: function () {
+                    this.$el.removeClass("color-picker-target");
+                },
+                setColor: function (rgba) {
+                    this.$el.css(this.parent.property, "rgba(" + rgba.join(",") + ")"); 
+                }
+            }
+
             var that = this;
+                $template = $(template),
+                $target = this.target.$el;
 
-            this.target.parent = this.colorBox.parent = this.hueSlider.parent = that;
+            if (config.trigger) {
+                $target.on(config.trigger, function () { that.show.call(that) });
+            }
 
-            _instify.tools.templateLoader.load("colorPicker", function (template) {
-                var $template = $(template),
-                    $target = that.target.$el;
-                that.$el = $template.filter(".color-picker");
-                
-                that.$el.appendTo($("body"));
-                that.colorSample.$el = that.$el.find(".color-sample");
+            this.$el = $template.filter(".color-picker");
+            this.$el.appendTo($("body"));
 
-                that.positionAtStart();
+            this.colorSample.$el = this.$el.find(".color-sample");
 
-                that.$overlay = $template.filter(".color-picker-overlay");
-                that.$overlay.appendTo($("body"));
+            this.positionAtStart();
 
-                that.$cancel = that.$el.find(".btn-cancel");
-                that.$save = that.$el.find(".btn-save");
-                that.$close = that.$el.find(".close");
+            this.$overlay = $template.filter(".color-picker-overlay");
+            this.$overlay.appendTo($("body"));
 
-                that.lastColor.set($target.css(that.property));
-                that.color.set($target.css(that.property));
+            this.$cancel = this.$el.find(".btn-cancel");
+            this.$save = this.$el.find(".btn-save");
+            this.$close = this.$el.find(".close");
 
-                that.colorBox.$el = that.$el.find(".color-box");
-                that.colorBox.$handle = that.$el.find(".color-box-handle");
-                that.colorBox.init();
+            this.lastColor.set($target.css(this.property));
+            this.color.set($target.css(this.property));
 
-                that.hueSlider.$el = that.$el.find(".hue-slider");
-                that.hueSlider.$handle = that.$el.find(".hue-slider-handle");
-                that.hueSlider.init();
-            });
+            this.colorBox.$el = this.$el.find(".color-box");
+            this.colorBox.$handle = this.$el.find(".color-box-handle");
+            this.colorBox.init();
+
+            this.hueSlider.$el = this.$el.find(".hue-slider");
+            this.hueSlider.$handle = this.$el.find(".hue-slider-handle");
+            this.hueSlider.init();
         },
         setupEvents: function () {
             var that = this,
@@ -108,8 +138,8 @@
                 "mouseenter.colorPicker": function () { that.showColor(that.lastColor); },
                 "mouseleave.colorPicker": function () { that.showColor(that.color); }
             });
-            this.$close.on("click.colorPicker", function () { /*that.hide();*/ return false; });
-            this.$overlay.on("click.colorPicker", function () { /*that.hide();*/ return false; });
+            this.$close.on("click.colorPicker", function () { that.hide(); return false; });
+            this.$overlay.on("click.colorPicker", function () { that.hide(); return false; });
         },
         teardownEvents: function () {
             $window.off(".colorPicker");
@@ -135,12 +165,12 @@
             this.target.$el.removeClass("active");
             this.target.destroy();
 
-            this.$el.on({
-                "webkitTransitionEnd.colorPickerOut": function () { that.positionAtStart(); }, // webkit
-                "oTransitionEnd.colorPickerOut": function () { that.positionAtStart(); },      // opera
-                "MSTransitionEnd.colorPickerOut": function () { that.positionAtStart(); },     // ie
-                "transitionend.colorPickerOut": function () { that.positionAtStart(); }        // firefox
-            });
+            // this.$el.on({
+            //     "webkitTransitionEnd.colorPickerOut": function () { that.positionAtStart(); }, // webkit
+            //     "oTransitionEnd.colorPickerOut": function () { that.positionAtStart(); },      // opera
+            //     "MSTransitionEnd.colorPickerOut": function () { that.positionAtStart(); },     // ie
+            //     "transitionend.colorPickerOut": function () { that.positionAtStart(); }        // firefox
+            // });
         },
         positionAtStart: function () {
             this.$el.css({
@@ -168,19 +198,6 @@
             $el: null,
             setColor: function (rgba) {
                 this.$el.css("background-color", "rgba(" + rgba.join(",") + ")");
-            }
-        },
-        target: {
-            parent: null,
-            $el: null,
-            init: function () {
-                this.$el.addClass("color-picker-target");
-            },
-            destroy: function () {
-                this.$el.removeClass("color-picker-target");
-            },
-            setColor: function (rgba) {
-                this.$el.css(this.parent.property, "rgba(" + rgba.join(",") + ")"); 
             }
         },
         colorBox: {
