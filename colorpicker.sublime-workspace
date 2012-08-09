@@ -3,6 +3,38 @@
 	{
 		"selected_items":
 		[
+			[
+				"get",
+				"getColor"
+			],
+			[
+				"tar",
+				"target"
+			],
+			[
+				"target",
+				"targetColor"
+			],
+			[
+				"this",
+				"thisEl"
+			],
+			[
+				"Color",
+				"ColorBox"
+			],
+			[
+				"pro",
+				"property"
+			],
+			[
+				"proto",
+				"prototype"
+			],
+			[
+				"color",
+				"color-picker"
+			]
 		]
 	},
 	"buffers":
@@ -11,7 +43,47 @@
 			"file": "ColorPicker.js",
 			"settings":
 			{
-				"buffer_size": 12879,
+				"buffer_size": 13864,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": ".gitignore",
+			"settings":
+			{
+				"buffer_size": 1989,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "ColorPicker.css",
+			"settings":
+			{
+				"buffer_size": 7777,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "example.js",
+			"settings":
+			{
+				"buffer_size": 1124,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "example.html",
+			"settings":
+			{
+				"buffer_size": 805,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "example.css",
+			"settings":
+			{
+				"buffer_size": 474,
 				"line_ending": "Windows"
 			}
 		}
@@ -41,6 +113,11 @@
 	"file_history":
 	[
 		"/C/Users/Adam/Dropbox/todo.txt",
+		"/C/Users/Adam/Dropbox/todo 07-2012 archive.txt",
+		"/C/Users/Adam/Documents/Freelance/instify/Source/instify/js/page.add.js",
+		"/C/Users/Adam/Documents/GitHub/ColorPicker/README.md",
+		"/C/Users/Adam/Documents/GitHub/ColorPicker/Example.html",
+		"/C/Users/Adam/Documents/GitHub/ColorPicker/colorpicker.sublime-project",
 		"/C/Users/Adam/Documents/GitHub/Color.js/colorjs.sublime-project",
 		"/C/Users/Adam/Documents/GitHub/Color.js/Example.html",
 		"/C/Users/Adam/Documents/GitHub/Color.js/README.md",
@@ -69,6 +146,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			".btn",
+			"that",
+			"class",
 			"')`\n",
 			"highlig"
 		],
@@ -78,6 +158,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"this"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -88,7 +169,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -96,15 +177,15 @@
 					"file": "ColorPicker.js",
 					"settings":
 					{
-						"buffer_size": 12879,
+						"buffer_size": 13864,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								8298,
+								8298
 							]
 						],
 						"settings":
@@ -112,6 +193,140 @@
 							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2597.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": ".gitignore",
+					"settings":
+					{
+						"buffer_size": 1989,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1970,
+								1970
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2258.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "ColorPicker.css",
+					"settings":
+					{
+						"buffer_size": 7777,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								891,
+								891
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "example.js",
+					"settings":
+					{
+						"buffer_size": 1124,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1123,
+								1123
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "example.html",
+					"settings":
+					{
+						"buffer_size": 805,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								671,
+								671
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "example.css",
+					"settings":
+					{
+						"buffer_size": 474,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								106,
+								106
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -128,7 +343,7 @@
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 33.0
 	},
 	"layout":
 	{
@@ -155,7 +370,7 @@
 	"menu_visible": true,
 	"replace":
 	{
-		"height": 0.0
+		"height": 62.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -178,6 +393,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 195.0,
+	"side_bar_width": 229.0,
 	"status_bar_visible": true
 }
