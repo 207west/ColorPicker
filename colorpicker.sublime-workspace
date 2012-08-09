@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"parent",
+				"parentColorHsv"
+			],
+			[
+				"pro",
+				"prototype"
+			],
+			[
+				"Color",
+				"ColorPicker"
+			],
+			[
 				"get",
 				"getColor"
 			],
@@ -18,14 +30,6 @@
 			[
 				"this",
 				"thisEl"
-			],
-			[
-				"Color",
-				"ColorBox"
-			],
-			[
-				"pro",
-				"property"
 			],
 			[
 				"proto",
@@ -43,15 +47,7 @@
 			"file": "ColorPicker.js",
 			"settings":
 			{
-				"buffer_size": 13864,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": ".gitignore",
-			"settings":
-			{
-				"buffer_size": 1989,
+				"buffer_size": 14110,
 				"line_ending": "Windows"
 			}
 		},
@@ -113,6 +109,7 @@
 	"file_history":
 	[
 		"/C/Users/Adam/Dropbox/todo.txt",
+		"/C/Users/Adam/Documents/GitHub/ColorPicker/.gitignore",
 		"/C/Users/Adam/Dropbox/todo 07-2012 archive.txt",
 		"/C/Users/Adam/Documents/Freelance/instify/Source/instify/js/page.add.js",
 		"/C/Users/Adam/Documents/GitHub/ColorPicker/README.md",
@@ -146,6 +143,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"counter",
 			".btn",
 			"that",
 			"class",
@@ -169,7 +167,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -177,15 +175,15 @@
 					"file": "ColorPicker.js",
 					"settings":
 					{
-						"buffer_size": 13864,
+						"buffer_size": 14110,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8298,
-								8298
+								13538,
+								13538
 							]
 						],
 						"settings":
@@ -195,39 +193,13 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2597.0,
+						"translation.y": 5602.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": ".gitignore",
-					"settings":
-					{
-						"buffer_size": 1989,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1970,
-								1970
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 2258.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
 					"file": "ColorPicker.css",
 					"settings":
 					{
@@ -255,7 +227,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 2,
 					"file": "example.js",
 					"settings":
 					{
@@ -282,7 +254,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 3,
 					"file": "example.html",
 					"settings":
 					{
@@ -309,7 +281,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 4,
 					"file": "example.css",
 					"settings":
 					{
@@ -392,7 +364,7 @@
 	"show_minimap": true,
 	"show_open_files": false,
 	"show_tabs": true,
-	"side_bar_visible": true,
+	"side_bar_visible": false,
 	"side_bar_width": 229.0,
 	"status_bar_visible": true
 }
