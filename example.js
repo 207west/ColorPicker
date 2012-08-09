@@ -1,4 +1,4 @@
-(function () {
+$(function () {
 	var $wells = $(".well");
 	cpTopLeft = new ColorPicker({ 
 		target: $wells.eq(0), 
@@ -47,4 +47,4 @@
 	});
 
 	console.log("done");
-})();
+});
