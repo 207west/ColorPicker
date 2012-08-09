@@ -44,32 +44,37 @@
 
     ColorPicker.prototype = {
         init: function (config) {
-            this.colorBox.parent = this.hueSlider.parent = this;
-
-            this.target = {
-                parent: this,
-                $el: config.target || null,
-                init: function () {
-                    this.$el.addClass("color-picker-target");
-                },
-                destroy: function () {
-                    this.$el.removeClass("color-picker-target");
-                },
-                setColor: function (rgba) {
-                    this.$el.css(this.parent.property, "rgba(" + rgba.join(",") + ")"); 
-                }
-            }
-
-            var that = this;
+            var that = this,
                 $template = $(template),
-                $target = this.target.$el;
+                $target = config.target,
+                targetColor = "",
+                $thisEl = this.$el = $template.filter(".color-picker").appendTo($("body"));
+
+            this.hueSlider.parent = this;
+
+            this.target = new ColorPicker.Target({
+                $el: $target || null,
+                property: config.property
+            });
+
+            targetColor = this.target.getColor();
+            this.lastColor.set(targetColor);
+            this.color.set(targetColor);
+
+            this.colorBox = new ColorPicker.ColorBox({
+                $el: $thisEl.find(".color-box"),
+                $handle: $thisEl.find(".color-box-handle"),
+                color: targetColor,
+                parent: this
+            });
+
+            
 
             if (config.trigger) {
                 $target.on(config.trigger, function () { that.show.call(that) });
             }
 
-            this.$el = $template.filter(".color-picker");
-            this.$el.appendTo($("body"));
+            
 
             this.colorSample.$el = this.$el.find(".color-sample");
 
@@ -82,12 +87,7 @@
             this.$save = this.$el.find(".btn-save");
             this.$close = this.$el.find(".close");
 
-            this.lastColor.set($target.css(this.property));
-            this.color.set($target.css(this.property));
-
-            this.colorBox.$el = this.$el.find(".color-box");
-            this.colorBox.$handle = this.$el.find(".color-box-handle");
-            this.colorBox.init();
+            
 
             this.hueSlider.$el = this.$el.find(".hue-slider");
             this.hueSlider.$handle = this.$el.find(".hue-slider-handle");
@@ -164,13 +164,6 @@
             this.$overlay.addClass("hide");
             this.target.$el.removeClass("active");
             this.target.destroy();
-
-            // this.$el.on({
-            //     "webkitTransitionEnd.colorPickerOut": function () { that.positionAtStart(); }, // webkit
-            //     "oTransitionEnd.colorPickerOut": function () { that.positionAtStart(); },      // opera
-            //     "MSTransitionEnd.colorPickerOut": function () { that.positionAtStart(); },     // ie
-            //     "transitionend.colorPickerOut": function () { that.positionAtStart(); }        // firefox
-            // });
         },
         positionAtStart: function () {
             this.$el.css({
@@ -185,8 +178,10 @@
                 "left": Math.ceil(targetElOffset.left + targetEl.width() + 10)
             });
         },
-        setColor: function () {
-
+        setColor: function (color) {
+            this.color.set(color).getRgba();
+            this.target.setColor(this.color.getRgba());
+            this.colorSample.setColor(this.color.getRgba());
         },
         showColor: function (color) {
             this.colorBox.setHandlePosition(color);
@@ -200,90 +195,7 @@
                 this.$el.css("background-color", "rgba(" + rgba.join(",") + ")");
             }
         },
-        colorBox: {
-            parent: null,
-            $el: null,
-            $handle: null,
-            center: [128, 128],
-            position: [],
-            maxY: 0,
-            minY: 0,
-            maxX: 0,
-            minX: 0,
-            centerOffset: 0,
-            saturation: 0,
-            brightness: 0,
-            mouseover: false,
-            init: function () {
-                var that = this
-                  , elHeight = this.$el.height()                    
-                  , elWidth = this.$el.width()                      
-                  , handleHeight = this.$handle.outerHeight(true)
-                  , handleWidth = this.$handle.outerWidth(true);
-
-                this.minX = 0;
-                this.minY = 0
-                // use height and width - 1 because the height and width are 256, and we want 255
-                this.maxY = (elHeight - 1);
-                this.maxX = (elWidth - 1);
-                this.centerOffset = (handleHeight / 2);
-
-                var hsv = this.parent.color.getHsv();
-                this.saturation = hsv[1];
-                this.brightness = hsv[2];
-                this.setHandlePosition(this.parent.color);
-            },
-            setHandlePosition: function (x, y) {
-                if (y !== undefined) {
-                    // x and y are coordinates
-                    var actualY = (y < this.minY ? this.minY : (y > this.maxY ? this.maxY : y))
-                      , actualX = (x < this.minX ? this.minX : (x > this.maxX ? this.maxX : x))
-                      , colorY = 255 - actualY
-                      , colorX = actualX
-                      , hue = this.parent.hueSlider.hue
-                      , saturation = colorX / 255
-                      , brightness = colorY / 255
-                      , hsv = this.parent.color.getHsv()
-                      , rgba = [];
-
-                    this.saturation = saturation;
-                    this.brightness = brightness;
-                    this.position = [actualX, actualY];
-
-                    this.$handle.css({
-                        top: actualY - this.centerOffset,
-                        left: actualX - this.centerOffset
-                    });
-
-                    if (!_.isEqual(hsv, [hue, saturation, brightness])) {
-                        rgba = this.parent.color.set({ hsv: [hue, saturation, brightness] }).getRgba();
-                        this.parent.target.setColor(rgba);
-                        this.parent.colorSample.setColor(rgba);
-                    }
-                } else {
-                    // x is a Color
-                    var hsv = x.getHsv()
-                      , colorX = hsv[1] * 255
-                      , colorY = (1 - hsv[2]) * 255;
-
-                    this.$handle.css({
-                        top: colorY - this.centerOffset,
-                        left: colorX - this.centerOffset
-                    });
-                }
-            },
-            setHue: function (h) {
-                var hsv = [h, this.saturation, this.brightness];
-
-                if (!_.isEqual(this.parent.color.getHsv(), hsv)) {
-                    var colorBoxRgba = this.parent.color.hsvToRgba([h, 1, 1])
-                      , targetRgba = this.parent.color.set({ hsv: hsv }).getRgba();
-                    this.$el.css("background-color", "rgba(" + colorBoxRgba.join(",") + ")");
-                    this.parent.target.setColor(targetRgba);
-                    this.parent.colorSample.setColor(targetRgba);
-                }
-            }
-        },
+        
         hueSlider: {
             parent: null,
             $el: null,
@@ -329,4 +241,114 @@
             }
         }
     };
+
+    ColorPicker.Target = function (config) {
+        this.property = config.property;
+        this.$el = config.$el;
+        this.init();
+    };
+
+    ColorPicker.Target.prototype = {
+        init: function () {
+            this.$el.addClass("color-picker-target");
+        },
+        destroy: function () {
+            this.$el.removeClass("color-picker-target");
+        },
+        setColor: function (rgba) {
+            this.$el.css(this.property, "rgba(" + rgba.join(",") + ")"); 
+        },
+        getColor: function () {
+            return this.$el.css(this.property);
+        }
+    };
+
+    ColorPicker.ColorBox = function (config) {
+        this.$el = config.$el || null;
+        this.$handle = config.$handle || null;
+        this.color = config.color || null;
+        this.parent = config.parent;
+        this.center = [128, 128];
+        this.position = [];
+        this.maxY = 0;
+        this.minY = 0;
+        this.maxX = 0;
+        this.minX = 0;
+        this.centerOffset = 0;
+        this.saturation = 0;
+        this.brightness = 0;
+        this.mouseover = false;
+
+        this.init();
+    };
+
+    ColorPicker.ColorBox.prototype = {
+        init: function () {
+            var that = this
+              , elHeight = this.$el.height()                    
+              , elWidth = this.$el.width()                      
+              , handleHeight = this.$handle.outerHeight(true)
+              , handleWidth = this.$handle.outerWidth(true);
+
+            this.minX = 0;
+            this.minY = 0
+            // use height and width - 1 because the height and width are 256, and we want 255
+            this.maxY = (elHeight - 1);
+            this.maxX = (elWidth - 1);
+            this.centerOffset = (handleHeight / 2);
+
+            var hsv = this.parent.color.getHsv();
+            this.saturation = hsv[1];
+            this.brightness = hsv[2];
+            this.setHandlePosition(this.parent.color);
+        },
+        setHandlePosition: function (x, y) {
+            if (y !== undefined) {
+                // x and y are coordinates
+                var actualY = (y < this.minY ? this.minY : (y > this.maxY ? this.maxY : y))
+                  , actualX = (x < this.minX ? this.minX : (x > this.maxX ? this.maxX : x))
+                  , colorY = 255 - actualY
+                  , colorX = actualX
+                  , hue = this.parent.hueSlider.hue
+                  , saturation = colorX / 255
+                  , brightness = colorY / 255
+                  , hsv = this.parent.color.getHsv()
+                  , rgba = [];
+
+                this.saturation = saturation;
+                this.brightness = brightness;
+                this.position = [actualX, actualY];
+
+                this.$handle.css({
+                    top: actualY - this.centerOffset,
+                    left: actualX - this.centerOffset
+                });
+
+                if (!_.isEqual(hsv, [hue, saturation, brightness])) {
+                    this.parent.setColor({ hsv: [hue, saturation, brightness] });
+                }
+            } else {
+                // x is a Color
+                var hsv = x.getHsv()
+                  , colorX = hsv[1] * 255
+                  , colorY = (1 - hsv[2]) * 255;
+
+                this.$handle.css({
+                    top: colorY - this.centerOffset,
+                    left: colorX - this.centerOffset
+                });
+            }
+        },
+        setHue: function (h) {
+            var hsv = [h, this.saturation, this.brightness];
+
+            if (!_.isEqual(this.parent.color.getHsv(), hsv)) {
+                var colorBoxRgba = this.parent.color.hsvToRgba([h, 1, 1])
+                  , targetRgba = this.parent.color.set({ hsv: hsv }).getRgba();
+                this.$el.css("background-color", "rgba(" + colorBoxRgba.join(",") + ")");
+                this.parent.target.setColor(targetRgba);
+                this.parent.colorSample.setColor(targetRgba);
+            }
+        }
+    }
 }).call(this);
