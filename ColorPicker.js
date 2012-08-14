@@ -4,6 +4,7 @@
         $document = $(document),
         template = '<div class="color-picker-overlay hide"></div>' + 
                     '<div class="color-picker hide">' +
+                        '<div class="color-picker-arrow"></div>' +
                         '<div class="color-sample-wrap box-wrap">' +
                             '<div class="color-sample box"></div>' +
                         '</div>' +
@@ -160,16 +161,62 @@
         },
         positionAtStart: function () {
             this.$el.css({
-                "left": -this.$el.outerWidth(true)
+                "left": -this.$el.outerWidth()
             }).off(".colorPickerOut");
         },
         positionByTarget: function () {
             var targetEl = this.target.$el,
-                targetElOffset = targetEl.offset();
+                targetElOffset = targetEl.offset(),
+                targetElOffsetLeft = targetElOffset.left,
+                targetElOffsetTop = targetElOffset.top,
+                targetElWidth = targetEl.width(),
+                targetElHeight = targetEl.outerHeight(),
+                targetOverflowsTop = targetElOffsetTop < 0,
+                targetOverflowsBottom = targetElOffsetTop + targetElHeight > $window.height(),
+                thisEl = this.$el,
+                thisElOffset = thisEl.offset(),
+                thisElOffsetTop = thisElOffset.top
+                thisElWidth = thisEl.outerWidth(),
+                thisElHeight = thisEl.outerHeight(),
+                spaceOnLeft = targetElOffsetLeft,
+                spaceOnRight = $window.width() - (targetElOffsetLeft + targetElWidth),
+                spaceOnTop = targetElOffsetTop,
+                spaceOnBottom = $window.height() - (targetElOffsetTop + targetElHeight),
+                finalLeft = 0,
+                finalTop = Math.round(targetElOffset.top + (targetEl.outerHeight() / 2) - (this.$el.outerHeight() / 2)),
+                pickerOverflowsTop = finalTop < 0,
+                pickerOverflowsBottom = finalTop + thisElHeight > $window.height(),
+                transformOrigin = "transform-left";
+
+            if (spaceOnRight >= spaceOnLeft) {
+                // positioned right of target
+                finalLeft = Math.round(targetElOffsetLeft + targetElWidth + 10);
+            } else {
+                // positioned left of the target
+                finalLeft = Math.round(targetElOffsetLeft - thisElWidth - 10);
+                transformOrigin = "transform-right";
+            }
+
+            if (pickerOverflowsTop) {
+                if (targetOverflowsTop) {
+
+                } else {
+                    finalTop = targetElOffsetTop;
+                    transformOrigin = (spaceOnRight >= spaceOnLeft) ? "transform-top-left" : "transform-top-right";
+                }
+            } else if (pickerOverflowsBottom) {
+                if (targetOverflowsBottom) {
+
+                } else {
+                    finalTop = targetElOffsetTop + targetElHeight - thisElHeight;
+                    transformOrigin = (spaceOnRight >= spaceOnLeft) ? "transform-bottom-left" : "transform-bottom-right";
+                }
+            }
+
             this.$el.css({
-                "top": Math.ceil(targetElOffset.top - ((this.$el.outerHeight(true) / 2) - (targetEl.outerHeight(true) / 2))),
-                "left": Math.ceil(targetElOffset.left + targetEl.width() + 10)
-            });
+                "top": finalTop,
+                "left": finalLeft
+            }).addClass(transformOrigin);
         },
         setColor: function (color) {
             this.lastColor.set(this.color);

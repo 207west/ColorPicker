@@ -18,6 +18,14 @@
     z-index: 1000;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+.color-picker.transform-left { transform-origin: left; }
+.color-picker.transform-top { transform-origin: top; }
+.color-picker.transform-top-left { transform-origin: left top; }
+.color-picker.transform-top-right { transform-origin: right top; }
+.color-picker.transform-right { transform-origin: right; }
+.color-picker.transform-bottom-left { transform-origin: left bottom; }
+.color-picker.transform-bottom { transform-origin: bottom; }
+.color-picker.transform-bottom-right { transform-origin: bottom-right; }
 .color-picker.hide { 
     opacity: 0;
     transform: scale(0.7);
@@ -40,6 +48,10 @@
 
 .color-picker-target { 
     -webkit-transition: none;
+}
+
+.color-picker-arrow {
+    display: none;
 }
 
 .box-wrap { border: 1px solid #a5a5a5; }
