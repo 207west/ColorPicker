@@ -35,7 +35,7 @@
 
         this.property = config.property || "background-color";
         this.lastColor = new Color(config.rgba);
-        this.color = new Color(config.rgba);
+        this.color = new Color();
 
         this.init(config);
     };
@@ -59,6 +59,10 @@
                 property: config.property
             });
 
+            targetColor = this.target.getColor();
+            this.lastColor.set(targetColor);
+            this.setColor(targetColor);
+
             this.colorBox = new ColorPicker.ColorBox({
                 $el: $thisEl.find(".color-box"),
                 $handle: $thisEl.find(".color-box-handle"),
@@ -66,7 +70,8 @@
             });
 
             this.colorSample = new ColorPicker.ColorSample({
-                $el: $thisEl.find(".color-sample")
+                $el: $thisEl.find(".color-sample"),
+                parent: this
             });
 
             this.hueSlider = new ColorPicker.HueSlider({
@@ -74,10 +79,6 @@
                 $handle: $thisEl.find(".hue-slider-handle"),
                 parent: this
             });
-
-            targetColor = this.target.getColor();
-            this.lastColor.set(targetColor);
-            this.color.set(targetColor);
 
             if (config.trigger) {
                 $target.on(config.trigger, function () { that.show.call(that) });
@@ -240,14 +241,15 @@
                 hsv = this.color.getHsv();
 
             this.target.setColor(rgba);
-            this.colorBox.setHue(hsv[0]);
-            this.colorSample.setColor(rgba);
+            //this.colorBox.setHue(hsv[0]);
+            //this.colorSample.setColor(rgba);
         },
         getColor: function () {
             return { hsv: [this.hueSlider.hue, this.colorBox.saturation, this.colorBox.brightness] };
         },
         showColor: function (color) {
             this.colorBox.setHandlePosition(color);
+            this.colorBox.setHue(color.getHsv()[0]);
             this.hueSlider.setHandlePosition(color);
             this.colorSample.setColor(color.getRgba());
         }
@@ -277,6 +279,8 @@
     ColorPicker.ColorSample = function (config) {
         this.parent = config.parent;
         this.$el = config.$el || null;
+
+        this.setColor(this.parent.color.getRgba());
     } 
 
     ColorPicker.ColorSample.prototype = {
@@ -322,6 +326,7 @@
             this.saturation = hsv[1];
             this.brightness = hsv[2];
             this.setHandlePosition(this.parent.color);
+            this.setHue(hsv[0]);
         },
         setHandlePosition: function (x, y) {
             if (y !== undefined) {
@@ -346,7 +351,7 @@
                 });
 
                 if (!_.isEqual(hsv, [hue, saturation, brightness])) {
-                    //this.parent.setColor({ hsv: [hue, saturation, brightness] });
+                    this.parent.showColor(new Color({ hsv: [hue, saturation, brightness] }));
                 }
             } else {
                 // x is a Color
@@ -361,12 +366,14 @@
             }
         },
         setHue: function (h) {
-            var hsv = [h, this.saturation, this.brightness];
+            var hsv = [h, 1, 1];
 
-            if (!_.isEqual(this.parent.color.getHsv(), hsv)) {
-                var colorBoxRgba = Color.hsvToRgba([h, 1, 1])
+            //this.setHandlePosition(new Color(hsv));
+
+            //if (!_.isEqual(this.parent.color.getHsv(), hsv)) {
+                var colorBoxRgba = Color.hsvToRgba(hsv)
                 this.$el.css("background-color", "rgba(" + colorBoxRgba.join(",") + ")");
-            }
+            //}
         }
     };
 
@@ -402,23 +409,23 @@
         setHandlePosition: function (y) {
             var actualY, // y after it is restricted to the colorbox's area OR after it is converted from a hue
                 hsv,
-                parentColor;
+                parentColorHsv = this.parent.color.getHsv();
             
             if (!_.has(y, "rgba")) { // y is the y coordinate
-                parentColorHsv = this.parent.color.getHsv();
-
                 actualY = (y < this.minY ? this.minY : (y > this.maxY ? this.maxY : y));
                 this.hue = 1 - (actualY / this.maxY);
             } else { // y is a Color
                 hsv = y.getHsv();
                 this.hue = hsv[0];
-                actualY = (1 - this.hue) * this.maxX;
+                actualY = (1 - this.hue) * this.maxY;
             }
             this.position = [actualY];
             this.$handle.css({
                 top: actualY - 1 // -1 because 1px top border of handle 
             });
+
             this.parent.colorBox.setHue(this.hue);
+            this.parent.colorSample.setColor((new Color({ hsv: [this.hue, parentColorHsv[1], parentColorHsv[2]] })).getRgba());
         }
     };
 }).call(this);

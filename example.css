@@ -19,6 +19,16 @@
 .middle.right,
 .bottom.right { right: 10px; }
 
-#well4 { height: 300px; }
-#well5 { height: 100px; }
-#well6 { height: 400px; }
+#well4 { height: 300px; margin-top: -150px; }
+#well5 { height: 100px; margin-top: -50px; }
+#well6 { height: 400px; margin-top: -200px; }
+
+.top.left { background-color: red; }
+.top.middle { background-color: orange; }
+.top.right { background-color: yellow; }
+.middle { background-color: blue; }
+.middle.left { background-color: green; }
+.middle.right { background-color: indigo; }
+.bottom.left { background-color: violet; }
+.bottom.middle { background-color: white; }
+.bottom.right { background-color: black; }
