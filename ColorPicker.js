@@ -88,10 +88,9 @@
         setupEvents: function () {
             var that = this,
                 colorBox = this.colorBox,
-                hueSlider = this.hueSlider;
+                hueSlider = this.hueSlider,
 
-            $window.on({
-                "mousedown.colorPicker": function (event) {
+                windowMouseDown = function (event) {
                     var colorBoxRelativeX = event.pageX - colorBox.$el.offset().left,
                         colorBoxRelativeY = event.pageY - colorBox.$el.offset().top,
                         hueSliderRelativeX = event.pageX - hueSlider.$el.offset().left,
@@ -100,6 +99,7 @@
                     // setup the events only if the first click is within the colorbox region
                     if (colorBoxRelativeX > colorBox.minX && colorBoxRelativeX < colorBox.maxX && colorBoxRelativeY > colorBox.minY && colorBoxRelativeY < colorBox.maxY) {
                         colorBox.setHandlePosition(colorBoxRelativeX, colorBoxRelativeY);
+                        that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness] });
 
                         $window.on("mousemove.colorPicker", function (event) {
                             var relativeX = event.pageX - colorBox.$el.offset().left,
@@ -110,6 +110,7 @@
                         });
                     } else if (hueSliderRelativeY > hueSlider.minY && hueSliderRelativeY < hueSlider.maxY && hueSliderRelativeX > hueSlider.minX && hueSliderRelativeX < hueSlider.maxX) {
                         hueSlider.setHandlePosition(hueSliderRelativeY);
+                        that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness] });
 
                         $window.on("mousemove.colorPicker", function (event) {
                             var relativeX = event.pageX - hueSlider.$el.offset().left,
@@ -120,20 +121,34 @@
                         });
                     }
                 },
-                "mouseup.colorPicker": function () {
+                windowMouseUp = function (event) {
                     $window.off("mousemove.colorPicker");
-                }
+                },
+                closeColorPicker = function () {
+                    that.hide(); 
+                    return false;
+                };
+
+            // events
+
+            $window.on({
+                "mousedown.colorPicker": windowMouseDown,
+                "mouseup.colorPicker": windowMouseUp
             });
             
-            $(document).on("selectstart.colorPicker", function () { return false; });
+            //$(document).on("selectstart.colorPicker", function () { return false; });
 
             this.$cancel.on({
-                "click.colorPicker": function () { that.hide(); return false; },
-                "mouseenter.colorPicker": function () { that.showColor(that.lastColor); },
-                "mouseleave.colorPicker": function () { that.showColor(that.color); }
+                "click.colorPicker": closeColorPicker,
+                "mouseenter.colorPicker": function () { 
+                    that.showColor(that.lastColor); 
+                },
+                "mouseleave.colorPicker": function () { 
+                    that.showColor(that.color); 
+                }
             });
-            this.$close.on("click.colorPicker", function () { that.hide(); return false; });
-            this.$overlay.on("click.colorPicker", function () { that.hide(); return false; });
+            this.$close.on("click.colorPicker", closeColorPicker);
+            this.$overlay.on("click.colorPicker", closeColorPicker);
         },
         teardownEvents: function () {
             $window.off(".colorPicker");
@@ -290,11 +305,11 @@
 
     ColorPicker.ColorBox.prototype = {
         init: function () {
-            var that = this
-              , elHeight = this.$el.height()                    
-              , elWidth = this.$el.width()                      
-              , handleHeight = this.$handle.outerHeight(true)
-              , handleWidth = this.$handle.outerWidth(true);
+            var that = this,
+                elHeight = this.$el.height(),                 
+                elWidth = this.$el.width(),                    
+                handleHeight = this.$handle.outerHeight(true),
+                handleWidth = this.$handle.outerWidth(true);
 
             this.minX = 0;
             this.minY = 0
@@ -311,15 +326,15 @@
         setHandlePosition: function (x, y) {
             if (y !== undefined) {
                 // x and y are coordinates
-                var actualY = (y < this.minY ? this.minY : (y > this.maxY ? this.maxY : y))
-                  , actualX = (x < this.minX ? this.minX : (x > this.maxX ? this.maxX : x))
-                  , colorY = 255 - actualY
-                  , colorX = actualX
-                  , hue = this.parent.hueSlider.hue
-                  , saturation = colorX / 255
-                  , brightness = colorY / 255
-                  , hsv = this.parent.color.getHsv()
-                  , rgba = [];
+                var actualY = (y < this.minY ? this.minY : (y > this.maxY ? this.maxY : y)),
+                    actualX = (x < this.minX ? this.minX : (x > this.maxX ? this.maxX : x)),
+                    colorY = 255 - actualY,
+                    colorX = actualX,
+                    hue = this.parent.hueSlider.hue,
+                    saturation = colorX / 255,
+                    brightness = colorY / 255,
+                    hsv = this.parent.color.getHsv(),
+                    rgba = [];
 
                 this.saturation = saturation;
                 this.brightness = brightness;
