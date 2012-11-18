@@ -34,7 +34,7 @@
         this.$close = null;
 
         this.property = config.property || "background-color";
-        this.lastColor = new Color(config.rgba);
+        this.lastColor = null;
         this.color = new Color();
 
         this.init(config);
@@ -60,7 +60,7 @@
             });
 
             targetColor = this.target.getColor();
-            this.lastColor.set(targetColor);
+            this.lastColor = new Color(targetColor);
             this.setColor(targetColor);
 
             this.colorBox = new ColorPicker.ColorBox({
@@ -92,10 +92,12 @@
                 hueSlider = this.hueSlider,
 
                 windowMouseDown = function (event) {
-                    var colorBoxRelativeX = event.pageX - colorBox.$el.offset().left,
-                        colorBoxRelativeY = event.pageY - colorBox.$el.offset().top,
-                        hueSliderRelativeX = event.pageX - hueSlider.$el.offset().left,
-                        hueSliderRelativeY = event.pageY - hueSlider.$el.offset().top;
+                    var colorBoxOffset = colorBox.$el.offset(),
+                        hueSliderOffset = hueSlider.$el.offset(),
+                        colorBoxRelativeX = event.pageX - colorBoxOffset.left,
+                        colorBoxRelativeY = event.pageY - colorBoxOffset.top,
+                        hueSliderRelativeX = event.pageX - hueSliderOffset.left,
+                        hueSliderRelativeY = event.pageY - hueSliderOffset.top;
 
                     // setup the events only if the first click is within the colorbox region
                     if (colorBoxRelativeX > colorBox.minX && colorBoxRelativeX < colorBox.maxX && colorBoxRelativeY > colorBox.minY && colorBoxRelativeY < colorBox.maxY) {
@@ -103,8 +105,8 @@
                         that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness] });
 
                         $window.on("mousemove.colorPicker", function (event) {
-                            var relativeX = event.pageX - colorBox.$el.offset().left,
-                                relativeY = event.pageY - colorBox.$el.offset().top;
+                            var relativeX = event.pageX - colorBoxOffset.left,
+                                relativeY = event.pageY - colorBoxOffset.top;
 
                             colorBox.setHandlePosition(relativeX, relativeY);
                             that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness]})
@@ -114,8 +116,8 @@
                         that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness] });
 
                         $window.on("mousemove.colorPicker", function (event) {
-                            var relativeX = event.pageX - hueSlider.$el.offset().left,
-                                relativeY = event.pageY - hueSlider.$el.offset().top;
+                            var relativeX = event.pageX - hueSliderOffset.left,
+                                relativeY = event.pageY - hueSliderOffset.top;
 
                             hueSlider.setHandlePosition(relativeY);
                             that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness] })
@@ -128,6 +130,16 @@
                 closeColorPicker = function () {
                     that.hide(); 
                     return false;
+                },
+                cancelAndCloseColorPicker = function () {
+                    that.setColor(that.lastColor);
+                    that.hide();
+                    return false;
+                },
+                saveAndCloseColorPicker = function () {
+                    that.lastColor = new Color(that.color);
+                    that.hide();
+                    return false;
                 };
 
             // events
@@ -137,10 +149,10 @@
                 "mouseup.colorPicker": windowMouseUp
             });
             
-            //$(document).on("selectstart.colorPicker", function () { return false; });
+            //$document.on("selectstart.colorPicker", function () { return false; });
 
             this.$cancel.on({
-                "click.colorPicker": closeColorPicker,
+                "click.colorPicker": cancelAndCloseColorPicker,
                 "mouseenter.colorPicker": function () { 
                     that.showColor(that.lastColor); 
                 },
@@ -150,6 +162,7 @@
             });
             this.$close.on("click.colorPicker", closeColorPicker);
             this.$overlay.on("click.colorPicker", closeColorPicker);
+            this.$save.on("click.colorPicker", saveAndCloseColorPicker);
         },
         teardownEvents: function () {
             $window.off(".colorPicker");
@@ -157,6 +170,7 @@
             this.$cancel.off(".colorPicker");
             this.$close.off(".colorPicker");
             this.$overlay.off(".colorPicker");
+            this.$save.off(".colorPicker");
         },
         show: function () {
             this.setupEvents();
@@ -235,14 +249,8 @@
             }).addClass(transformOrigin);
         },
         setColor: function (color) {
-            this.lastColor.set(this.color);
-
-            var rgba = this.color.set(color).getRgba(),
-                hsv = this.color.getHsv();
-
-            this.target.setColor(rgba);
-            //this.colorBox.setHue(hsv[0]);
-            //this.colorSample.setColor(rgba);
+            this.color.set(color);
+            this.target.setColor(this.color.getRgba());
         },
         getColor: function () {
             return { hsv: [this.hueSlider.hue, this.colorBox.saturation, this.colorBox.brightness] };
@@ -252,6 +260,7 @@
             this.colorBox.setHue(color.getHsv()[0]);
             this.hueSlider.setHandlePosition(color);
             this.colorSample.setColor(color.getRgba());
+            this.target.setColor(color.getRgba());
         }
     };
 
@@ -350,9 +359,7 @@
                     left: actualX - this.centerOffset
                 });
 
-                if (!_.isEqual(hsv, [hue, saturation, brightness])) {
-                    this.parent.showColor(new Color({ hsv: [hue, saturation, brightness] }));
-                }
+                this.parent.colorSample.setColor(new Color({ hsv: [hue, saturation, brightness] }).getRgba());
             } else {
                 // x is a Color
                 var hsv = x.getHsv(),
@@ -366,14 +373,10 @@
             }
         },
         setHue: function (h) {
-            var hsv = [h, 1, 1];
+            var hsv = [h, 1, 1],
+                colorBoxRgba = Color.hsvToRgba(hsv);
 
-            //this.setHandlePosition(new Color(hsv));
-
-            //if (!_.isEqual(this.parent.color.getHsv(), hsv)) {
-                var colorBoxRgba = Color.hsvToRgba(hsv)
-                this.$el.css("background-color", "rgba(" + colorBoxRgba.join(",") + ")");
-            //}
+            this.$el.css("background-color", "rgba(" + colorBoxRgba.join(",") + ")");
         }
     };
 
