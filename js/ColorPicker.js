@@ -414,7 +414,7 @@
                 hsv,
                 parentColorHsv = this.parent.color.getHsv();
             
-            if (!_.has(y, "rgba")) { // y is the y coordinate
+            if (!_.has(y, "hsv")) { // y is the y coordinate
                 actualY = (y < this.minY ? this.minY : (y > this.maxY ? this.maxY : y));
                 this.hue = 1 - (actualY / this.maxY);
             } else { // y is a Color
