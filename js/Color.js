@@ -88,6 +88,9 @@
         isString = function (o) {
             return toString(o) === '[object String]';
         },
+        isUndefined = function (o) {
+            return o === void 0;
+        },
         map = function (arr, fn) {
             for (var i = 0; i < arr.length; i++) {
                 arr[i] = fn(arr[i]);
@@ -147,7 +150,7 @@
             return [h, s, v];
         },
         rgbaToHsva = function (rgba) {
-            var a = rgba[3],
+            var a = isUndefined(rgba[3]) ? 1 : rgba[3],
                 hsv = rgbToHsv(rgba);
 
             hsv.push(a);
@@ -155,10 +158,11 @@
             return hsv;
         },
         hsvaToRgba = function (hsva) {
-            var a = hsva[3],
+            var a = isUndefined(hsva[3]) ? 1 : hsva[3],
                 rgb = hsvToRgb(hsva);
 
             rgb.push(a);
+
             return rgb;
         }
         rgbToHsva = function (rgb) {
@@ -223,6 +227,7 @@
     Color.hexToHsva = hexToHsva;
     Color.hsvToHex = hsvToHex;
     Color.hsvToHex = hsvToHsva;
+    Color.hsvaToRgba = hsvaToRgba;
     Color.rgbaToRgb = rgbaToRgb;
     Color.rgbToRgba = rgbToRgba;
     Color.fixHex = fixHex;

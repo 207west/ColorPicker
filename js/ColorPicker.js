@@ -374,7 +374,7 @@
         },
         setHue: function (h) {
             var hsv = [h, 1, 1],
-                colorBoxRgba = Color.hsvToRgba(hsv);
+                colorBoxRgba = Color.hsvaToRgba(hsv);
 
             this.$el.css("background-color", "rgba(" + colorBoxRgba.join(",") + ")");
         }
@@ -414,7 +414,7 @@
                 hsv,
                 parentColorHsv = this.parent.color.getHsv();
             
-            if (!_.has(y, "hsv")) { // y is the y coordinate
+            if (!_.has(y, "hsva")) { // y is the y coordinate
                 actualY = (y < this.minY ? this.minY : (y > this.maxY ? this.maxY : y));
                 this.hue = 1 - (actualY / this.maxY);
             } else { // y is a Color
