@@ -99,8 +99,8 @@
                         hueSliderRelativeX = event.pageX - hueSliderOffset.left,
                         hueSliderRelativeY = event.pageY - hueSliderOffset.top;
 
-                    // setup the events only if the first click is within the colorbox region
                     if (colorBoxRelativeX > colorBox.minX && colorBoxRelativeX < colorBox.maxX && colorBoxRelativeY > colorBox.minY && colorBoxRelativeY < colorBox.maxY) {
+                        // setup the events only if the first click is within the colorbox region
                         colorBox.setHandlePosition(colorBoxRelativeX, colorBoxRelativeY);
                         that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness] });
 
@@ -110,8 +110,10 @@
 
                             colorBox.setHandlePosition(relativeX, relativeY);
                             that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness]})
+                            event.preventDefault();
                         });
                     } else if (hueSliderRelativeY > hueSlider.minY && hueSliderRelativeY < hueSlider.maxY && hueSliderRelativeX > hueSlider.minX && hueSliderRelativeX < hueSlider.maxX) {
+                        // same thing as above for the hueSlider
                         hueSlider.setHandlePosition(hueSliderRelativeY);
                         that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness] });
 
@@ -121,8 +123,11 @@
 
                             hueSlider.setHandlePosition(relativeY);
                             that.setColor({ hsv: [hueSlider.hue, colorBox.saturation, colorBox.brightness] })
+                            event.preventDefault();
                         });
                     }
+
+                    event.preventDefault();
                 },
                 windowMouseUp = function (event) {
                     $window.off("mousemove.colorPicker");
@@ -148,8 +153,6 @@
                 "mousedown.colorPicker": windowMouseDown,
                 "mouseup.colorPicker": windowMouseUp
             });
-            
-            //$document.on("selectstart.colorPicker", function () { return false; });
 
             this.$cancel.on({
                 "click.colorPicker": cancelAndCloseColorPicker,
@@ -166,7 +169,6 @@
         },
         teardownEvents: function () {
             $window.off(".colorPicker");
-            $(document).off(".colorPicker");
             this.$cancel.off(".colorPicker");
             this.$close.off(".colorPicker");
             this.$overlay.off(".colorPicker");
@@ -336,6 +338,8 @@
             this.brightness = hsv[2];
             this.setHandlePosition(this.parent.color);
             this.setHue(hsv[0]);
+
+            this.$el.attr("unselectable", "on");
         },
         setHandlePosition: function (x, y) {
             if (y !== undefined) {
