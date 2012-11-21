@@ -18,11 +18,28 @@
                         '<div class="box-wrap hue-slider-wrap">' +
                             '<div class="box hue-slider"><div class="hue-slider-handle"></div></div>' +
                         '</div>' +
-                        '<div class="btn-wrap">' +
-                            '<a href="#" class="btn btn-inverse btn-cancel">Cancel</a>' +
-                            '<a href="#" class="btn btn-primary btn-save">Save</a>' +
-                        '</div>' +
                    '</div>';
+                   //  '<div class="color-picker-overlay hide"></div>' + 
+                   //  '<div class="color-picker hide">' +
+                   //      '<div class="color-picker-arrow"></div>' +
+                   //      '<div class="color-sample-wrap box-wrap">' +
+                   //          '<div class="color-sample box"></div>' +
+                   //      '</div>' +
+                   //      '<a href="#" class="close">&times;</a>' +
+                   //      '<div class="color-box-wrap box-wrap">' +
+                   //          '<div class="color-box box">' +
+                   //              '<div class="color-box-overlay"></div>' +
+                   //              '<div class="color-box-handle"><div class="color-box-handle-inner"></div></div>' +
+                   //          '</div>' +
+                   //      '</div>' +
+                   //      '<div class="box-wrap hue-slider-wrap">' +
+                   //          '<div class="box hue-slider"><div class="hue-slider-handle"></div></div>' +
+                   //      '</div>' +
+                   //      '<div class="btn-wrap">' +
+                   //          '<a href="#" class="btn btn-inverse btn-cancel">Cancel</a>' +
+                   //          '<a href="#" class="btn btn-primary btn-save">Save</a>' +
+                   //      '</div>' +
+                   // '</div>';
 
     this.ColorPicker = function (config) {
         var that = this;
@@ -45,6 +62,8 @@
             var that = this,
                 $template = $(template),
                 $target = config.target,
+                $trigger = config.trigger,
+                triggerEvent = config.triggerEvent,
                 targetColor = "",
                 $thisEl = this.$el = $template.filter(".color-picker").appendTo($("body"));
 
@@ -80,8 +99,12 @@
                 parent: this
             });
 
-            if (config.trigger) {
-                $target.on(config.trigger, function () { that.show.call(that) });
+            if (triggerEvent) {
+                if ($trigger) {
+                    $trigger.on(triggerEvent, function () { that.show.call(that) });
+                } else {
+                    $target.on(triggerEvent, function () { that.show.call(that) });
+                }
             }
 
             this.positionAtStart();
@@ -163,7 +186,16 @@
                     that.showColor(that.color); 
                 }
             });
-            this.$close.on("click.colorPicker", closeColorPicker);
+            this.$close.on({
+                "click.colorPicker": closeColorPicker
+                //"click.colorPicker": cancelAndCloseColorPicker,
+                // "mouseenter.colorPicker": function () { 
+                //     that.showColor(that.lastColor); 
+                // },
+                // "mouseleave.colorPicker": function () { 
+                //     that.showColor(that.color); 
+                // }
+            });
             this.$overlay.on("click.colorPicker", closeColorPicker);
             this.$save.on("click.colorPicker", saveAndCloseColorPicker);
         },

@@ -32,3 +32,29 @@
 .bottom.left { background-color: violet; }
 .bottom.middle { background-color: white; }
 .bottom.right { background-color: black; }
+
+#lnkTest {
+	top: 25%;
+	left: 25px;
+	position: absolute;
+}
+
+#lnkWell6 {
+    border: 1px solid #b5b5b5;
+	background: #ededed;
+	padding: 10px;
+	position: absolute;
+	top: 50%;
+	margin-top: -16px;
+	right: 160px;
+}
+
+#lnkWell4 {
+    border: 1px solid #b5b5b5;
+	background: #ededed;
+	padding: 10px;
+	position: absolute;
+	top: 50%;
+	margin-top: -166px;
+	left: 10px;
+}
