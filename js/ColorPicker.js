@@ -9,7 +9,7 @@
     "use strict";
 
     var $window = $(this),
-        template = '<div class="color-picker-overlay hide"></div>' + 
+        template =  '<div class="color-picker-overlay hide"></div>' + 
                     '<div class="color-picker hide">' +
                         '<div class="color-picker-arrow"></div>' +
                         '<div class="color-sample-wrap box-wrap">' +
@@ -50,8 +50,10 @@
                 $body = $("body"),
                 $thisEl = this.$el = $template.filter(".color-picker").appendTo($body);
 
-            this.$overlay = $template.filter(".color-picker-overlay").appendTo($body);
-            this.$close = $thisEl.find(".close");
+            if (!config.static) {
+                this.$overlay = $template.filter(".color-picker-overlay").appendTo($body);
+                this.$close = $thisEl.find(".close");
+            }
 
             this.target = new ColorPicker.Target({
                 $el: $target || null,
@@ -77,7 +79,7 @@
                 parent: this
             });
 
-            if (triggerEvent) {
+            if (triggerEvent && !config.static) {
                 if ($trigger) {
                     $trigger.on(triggerEvent, function () { that.show.call(that) });
                 } else {
@@ -383,13 +385,16 @@
             var actualY, // y after it is restricted to the colorbox's area OR after it is converted from a hue
                 parentColorHsv = this.parent.color.getHsv();
             
-            if (!_.has(y, "hsva")) { // y is the y coordinate
+            if (!y.hasOwnProperty("hsva")) {
+                // y is the y coordinate
                 actualY = (y < this.minY ? this.minY : (y > this.maxY ? this.maxY : y));
                 this.hue = 1 - (actualY / this.maxY);
-            } else { // y is a Color
+            } else {
+                // y is a Color
                 this.hue = y.getHsv()[0];
                 actualY = (1 - this.hue) * this.maxY;
             }
+            
             this.$handle.css({
                 top: actualY - 1 // -1 because 1px top border of handle 
             });
